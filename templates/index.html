@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rich Point Discovery</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <h1>Rich Point Discovery</h1>
+            <div class="input-row">
+                <input type="text" id="url-input" placeholder="Paste a YouTube URL..." />
+                <button id="analyze-btn" onclick="startAnalysis()">Analyze</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>History</h3>
+            </div>
+            <div class="sidebar-list" id="sidebar-list">
+                <p class="sidebar-empty">No videos analyzed yet</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="status-section" class="status-section hidden">
+                <div class="status-bar">
+                    <div class="spinner"></div>
+                    <span id="status-text">Starting...</span>
+                </div>
+                <div class="progress-steps">
+                    <div class="step" id="step-fetch"><div class="step-dot"></div><span>Fetch transcript</span></div>
+                    <div class="step" id="step-scan"><div class="step-dot"></div><span>Scan for rich points</span></div>
+                    <div class="step" id="step-l1"><div class="step-dot"></div><span>Level 1: Understand</span></div>
+                    <div class="step" id="step-l2"><div class="step-dot"></div><span>Level 2: Deep analysis</span></div>
+                    <div class="step" id="step-jokes"><div class="step-dot"></div><span>Jokes</span></div>
+                </div>
+            </div>
+
+            <div id="error-section" class="error-section hidden">
+                <p id="error-text"></p>
+            </div>
+
+            <div id="results-section" class="results-section hidden">
+                <div class="video-url-bar" id="video-url-bar"></div>
+                <div class="two-col">
+                    <div class="col-results">
+                        <div class="results-header">
+                            <h2>Rich Points</h2>
+                            <div class="results-meta" id="results-meta"></div>
+                        </div>
+                        <div id="results-list"></div>
+
+                        <div id="jokes-section" class="jokes-section hidden">
+                            <div class="jokes-header">
+                                <h2>Jokes</h2>
+                                <div class="jokes-meta" id="jokes-meta"></div>
+                            </div>
+                            <div id="jokes-list"></div>
+                        </div>
+                    </div>
+                    <div class="col-transcript">
+                        <div class="transcript-header">
+                            <h2>Transcript</h2>
+                            <div class="transcript-meta" id="transcript-meta"></div>
+                        </div>
+                        <div class="transcript-body" id="transcript-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="welcome-section" class="welcome-section">
+                <p>Paste a YouTube URL above to discover cultural rich points and joke explanations.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
