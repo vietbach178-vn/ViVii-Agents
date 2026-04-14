@@ -24,11 +24,16 @@ flowchart TD
 
     subgraph Deep Analysis
         G -->|rich points + sentences| H["Level 2 Agent\n<i>LLM · per video</i>\n6 fields phân tích sâu"]
-        G -->|rich points + sentences| I["Joke Agent\n<i>LLM · per video</i>\nGiải thích tất cả jokes"]
+        G -->|rich points + sentences| I["Joke Agent\n<i>LLM · per video</i>\nGiải thích tất cả jokes\n+ tag 5 dark humor mechanisms"]
     end
 
-    H --> J["Final Output\n<i>9 fields per rich point\n+ joke explanations</i>"]
+    subgraph Practice
+        I -->|jokes + mechanisms| K["Exercise Builder Workflow\n<i>Prompt Chain + Evaluator-Optimizer</i>\ngraduated MCQ per mechanism"]
+    end
+
+    H --> J["Final Output\n<i>9 fields per rich point\n+ joke explanations\n+ dark humor exercises</i>"]
     I --> J
+    K --> J
 
     style B fill:#1a1a2e,stroke:#4ade80,color:#fff
     style C fill:#1a1a2e,stroke:#666,color:#fff
@@ -38,6 +43,7 @@ flowchart TD
     style G fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style H fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style I fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style K fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style J fill:#1a1a2e,stroke:#4ade80,color:#fff
 ```
 
@@ -133,14 +139,14 @@ Nhận Level 1 output → thêm 6 fields phân tích văn hoá sâu.
 | 8 | Related rich points | 2-4 từ liên quan (cùng subculture, cùng function) |
 | 9 | Outsider rephrase | Nói cách khác nếu chưa sẵn sàng dùng từ gốc |
 
-### Joke Agent (`joke_agent.py`)
+### Joke Agent (`agents/joke/`)
 
-Chạy song song với Level 2. Phân tích toàn bộ transcript và giải thích mọi joke/bit/reference.
+Chạy song song với Level 2. Phân tích toàn bộ transcript và giải thích mọi joke/bit/reference. Cũng gắn **dark humor mechanism tags** để Exercise Builder dùng downstream.
 
-- **Model:** `meta-llama/llama-4-scout-17b-16e-instruct` (Groq)
+- **Model:** Primary model từ `config.py`
 - **Input:** Full transcript (sentences) + Level 1 rich points (cho context)
-- **Output:** JSON `{ transcript_excerpt, timestamp, joke_type, explanation, cultural_context }`
-- **5 fields per joke:**
+- **Output:** JSON `{ transcript_excerpt, timestamp, joke_type, explanation, cultural_context, mechanisms, taboo_intensity }`
+- **7 fields per joke:**
 
 | # | Field | Mô tả |
 |---|-------|-------|
@@ -149,9 +155,50 @@ Chạy song song với Level 2. Phân tích toàn bộ transcript và giải th�
 | 3 | Joke type | observational, crowd-work, self-deprecating, cultural-reference, wordplay, roast, callback... |
 | 4 | Explanation | Giải thích joke — tại sao funny với American audience, đang mock/subvert cái gì |
 | 5 | Cultural context | Kiến thức văn hoá non-American cần biết để hiểu joke (nếu có) |
+| 6 | Mechanisms | Mảng tag từ 5 core dark humor mechanisms. Rỗng nếu joke không phải dark humor. |
+| 7 | Taboo intensity | `mild` / `medium` / `extreme` / rỗng. `extreme` = cross red line, Exercise Builder sẽ skip |
 
 - **Batching:** Transcript dài được chia thành batch ~3K words, mỗi batch 1 LLM call
 - **Dùng cho:** Video standup comedy — phần lớn nội dung đang nói kháy hoặc refer tới cultural context
+- **Mechanism rubric:** `agents/joke/mechanism_rubric.py` — single source of truth, Exercise Builder import lại để giữ taxonomy đồng bộ
+
+### Exercise Builder Workflow (`agents/exercise_builder/`)
+
+**Không phải agent — đây là một Workflow** (Prompt Chain + Evaluator-Optimizer). Control flow do code điều khiển, LLM chỉ thực thi từng node. Lý do chọn Workflow thay vì Agent: các bước cố định, dễ eval, dễ debug, chi phí dự đoán được. Xem `groovy-wiggling-tower.md` trong thư mục plans để hiểu quyết định thiết kế.
+
+- **Input:** `JokeOutput` từ Joke Agent
+- **Output:** `ExerciseSet` — list of graduated multiple-choice exercises
+- **Điều kiện kích hoạt:** chỉ sinh exercise cho jokes có `mechanisms` không rỗng và `taboo_intensity` không phải `extreme`. Video không có dark humor → output rỗng, không tốn token.
+
+**5 nodes:**
+
+1. **Parse & Route** (code) — lọc jokes, tạo list `(joke, mechanism)` pairs, 1 pair sinh 1 MCQ
+2. **Generate MCQ** (LLM, `GENERATE_SYSTEM`) — sinh graduated MCQ: A miss / B almost / C land
+3. **Evaluator Check** (LLM, `EVALUATE_SYSTEM`) — chấm 4 tiêu chí: incongruity, coherence, graduation, taste. Fail → retry tối đa 2 lần
+4. **Explanation** (LLM, `EXPLAIN_SYSTEM`) — viết why C lands, why B misses, pattern takeaway
+5. **Aggregate** (code) — shuffle vị trí đáp án đúng (không phải lúc nào C cũng đúng), assemble Exercise object
+
+**Graduated structure (quy tắc cốt lõi):**
+- **A** = phản ứng bình thường, không có attempt humor
+- **B** = có attempt mechanism nhưng weak (almost)
+- **C** = mechanism landed fully
+
+Sau khi shuffle vị trí, `correct` field trong output cho biết letter nào là đáp án đúng.
+
+**Mechanism taxonomy (5 core, import từ Joke Agent):**
+
+| ID | Mô tả ngắn |
+|----|------------|
+| `misdirection` | Setup dẫn expectation một hướng, punchline flip |
+| `taboo_violation` | Chạm chủ đề cấm (death, disaster, race, religion, sex) |
+| `benign_violation` | Vi phạm norm nhưng vẫn "safe" (McGraw-Warren 2010) |
+| `absurd_juxtaposition` | Nghiêm túc + ngớ ngẩn crash cùng context |
+| `subverted_solemnity` | Giọng thờ ơ với chủ đề nghiêm trọng |
+
+**Red lines:** mock nạn nhân thật còn sống, punch down vào protected groups bằng superiority thuần, platform hate framing → Joke Agent set `taboo_intensity="extreme"`, Exercise Builder skip.
+
+- **Retry policy:** mỗi (joke, mechanism) pair tối đa 2 retry nếu evaluator fail. Sau đó drop.
+- **Rate limit:** sleep 2s giữa các LLM call (Groq free tier friendly)
 
 ---
 
@@ -205,8 +252,13 @@ Agent-Richpoint-Discovery/
       agent.py         Level 2 agent (6 deep-analysis fields)
       prompt.py        LEVEL2_SYSTEM
     joke/
-      agent.py         Joke Explainer agent
-      prompt.py        JOKE_SYSTEM
+      agent.py              Joke Explainer agent
+      prompt.py             JOKE_SYSTEM (embeds mechanism_rubric)
+      mechanism_rubric.py   5 core dark humor mechanisms (source of truth)
+    exercise_builder/
+      __init__.py           Re-exports run_exercise_builder
+      workflow.py           5-node workflow (Prompt Chain + Evaluator-Optimizer)
+      prompts.py            GENERATE_SYSTEM, EVALUATE_SYSTEM, EXPLAIN_SYSTEM
 
   templates/
     index.html         Web UI template
@@ -218,7 +270,13 @@ Agent-Richpoint-Discovery/
 **Import pattern:** entry points (`main.py`, `app.py`) import từ `agents` package:
 
 ```python
-from agents import scan_all_chunks, run_level1, run_level2, run_joke_agent
+from agents import (
+    scan_all_chunks,
+    run_level1,
+    run_level2,
+    run_joke_agent,
+    run_exercise_builder,
+)
 from agents.splitter import split_sentences_with_llm
 ```
 

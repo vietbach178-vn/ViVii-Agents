@@ -15,7 +15,13 @@ from flask import Flask, render_template, request, jsonify
 
 from transcript import fetch_transcript
 from chunker import sentences_to_chunks
-from agents import scan_all_chunks, run_level1, run_level2, run_joke_agent
+from agents import (
+    scan_all_chunks,
+    run_level1,
+    run_level2,
+    run_joke_agent,
+    run_exercise_builder,
+)
 from aggregator import merge_levels
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -107,12 +113,22 @@ def process_video_job(job_id, url):
         joke_result = run_joke_agent(data["sentences"], all_l1)
         jokes = [j.model_dump() for j in joke_result.jokes]
 
+        # Stage 6 — Exercise Builder (dark humor practice MCQs)
+        job["status"] = "exercises"
+        job["message"] = "Generating practice exercises..."
+        exercise_set = run_exercise_builder(joke_result)
+        exercises = [e.model_dump() for e in exercise_set.exercises]
+
         # Merge
         merged = merge_levels(all_l1, all_l2)
         job["status"] = "done"
-        job["message"] = f"Done! Found {len(merged)} rich point(s), {len(jokes)} joke(s)"
+        job["message"] = (
+            f"Done! Found {len(merged)} rich point(s), {len(jokes)} joke(s), "
+            f"{len(exercises)} exercise(s)"
+        )
         job["results"] = merged
         job["jokes"] = jokes
+        job["exercises"] = exercises
         _save_jobs()
 
     except Exception as e:

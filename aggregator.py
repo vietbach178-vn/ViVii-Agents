@@ -19,7 +19,13 @@ def merge_levels(level1_points: list[dict], level2_points: list[dict]) -> list[d
     return merged
 
 
-def generate_markdown(video_url: str, word_count: int, rich_points: list[dict], jokes: list[dict] = None) -> str:
+def generate_markdown(
+    video_url: str,
+    word_count: int,
+    rich_points: list[dict],
+    jokes: list[dict] = None,
+    exercises: list[dict] = None,
+) -> str:
     """Generate markdown report for a single video."""
     date = datetime.now().strftime("%Y-%m-%d")
 
@@ -101,7 +107,14 @@ def generate_markdown(video_url: str, word_count: int, rich_points: list[dict], 
             ts = joke.get("timestamp") or 0
             mins = int(ts // 60)
             secs = int(ts % 60)
-            lines.append(f"## Joke {i} [{mins:02d}:{secs:02d}] — {joke.get('joke_type', '')}")
+            header_tags = joke.get("joke_type", "")
+            mechanisms = joke.get("mechanisms") or []
+            if mechanisms:
+                header_tags += f" · {'/'.join(mechanisms)}"
+                intensity = joke.get("taboo_intensity") or ""
+                if intensity:
+                    header_tags += f" · {intensity}"
+            lines.append(f"## Joke {i} [{mins:02d}:{secs:02d}] — {header_tags}")
             lines.append("")
             if joke.get("transcript_excerpt"):
                 lines.append(f"> {joke['transcript_excerpt']}")
@@ -112,6 +125,48 @@ def generate_markdown(video_url: str, word_count: int, rich_points: list[dict], 
             if joke.get("cultural_context"):
                 lines.append(f"**Cultural context:** {joke['cultural_context']}")
                 lines.append("")
+            lines.append("---")
+            lines.append("")
+
+    # Exercises section — dark humor practice MCQs
+    if exercises:
+        lines.append(f"# Practice exercises — dark humor mechanisms ({len(exercises)})")
+        lines.append("")
+        lines.append(
+            "> Each exercise targets one of five core mechanisms. Pick the option you think lands; "
+            "then read the explanation to learn *why*."
+        )
+        lines.append("")
+        for i, ex in enumerate(exercises, 1):
+            ts = ex.get("source_joke_timestamp") or 0
+            mins = int(ts // 60)
+            secs = int(ts % 60)
+            lines.append(
+                f"## Exercise {i} — {ex.get('mechanism', '')} (from joke @ [{mins:02d}:{secs:02d}])"
+            )
+            lines.append("")
+            lines.append(f"**Q.** {ex.get('question', '')}")
+            lines.append("")
+            options = ex.get("options") or {}
+            for letter in ("A", "B", "C"):
+                lines.append(f"- **{letter}.** {options.get(letter, '')}")
+            lines.append("")
+            lines.append(f"<details><summary>Show answer + explanation</summary>")
+            lines.append("")
+            lines.append(f"**Correct:** {ex.get('correct', '')}")
+            lines.append("")
+            expl = ex.get("explanation") or {}
+            if expl.get("why_c_lands"):
+                lines.append(f"**Why the correct option lands:** {expl['why_c_lands']}")
+                lines.append("")
+            if expl.get("why_b_misses"):
+                lines.append(f"**Why the near-miss option falls short:** {expl['why_b_misses']}")
+                lines.append("")
+            if expl.get("pattern_takeaway"):
+                lines.append(f"**Takeaway pattern:** {expl['pattern_takeaway']}")
+                lines.append("")
+            lines.append("</details>")
+            lines.append("")
             lines.append("---")
             lines.append("")
 

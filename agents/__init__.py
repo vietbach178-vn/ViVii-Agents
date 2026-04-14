@@ -10,6 +10,7 @@ from agents.scanner import scan_all_chunks
 from agents.level1 import run_level1
 from agents.level2 import run_level2
 from agents.joke import run_joke_agent
+from agents.exercise_builder import run_exercise_builder
 
 __all__ = [
     "split_sentences_with_llm",
@@ -17,4 +18,5 @@ __all__ = [
     "run_level1",
     "run_level2",
     "run_joke_agent",
+    "run_exercise_builder",
 ]

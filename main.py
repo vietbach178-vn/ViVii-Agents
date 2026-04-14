@@ -9,7 +9,13 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from transcript import fetch_transcript
 from chunker import sentences_to_chunks
-from agents import scan_all_chunks, run_level1, run_level2, run_joke_agent
+from agents import (
+    scan_all_chunks,
+    run_level1,
+    run_level2,
+    run_joke_agent,
+    run_exercise_builder,
+)
 from aggregator import merge_levels, generate_markdown
 
 
@@ -21,12 +27,12 @@ def process_video(url: str) -> str:
     print(f"Processing: {url}")
     print(f"{'='*60}")
 
-    print("\n[1/4] Fetching transcript...")
+    print("\n[1/6] Fetching transcript...")
     data = fetch_transcript(url)
     print(f"  Transcript: {data['word_count']:,} words")
 
     # Stage 2: Chunk + scan
-    print("\n[2/4] Scanning for rich point candidates...")
+    print("\n[2/6] Scanning for rich point candidates...")
     print(f"  Merged into {len(data['sentences'])} sentence(s)")
     chunks = sentences_to_chunks(data["sentences"])
     print(f"  Split into {len(chunks)} chunk(s)")
@@ -42,7 +48,7 @@ def process_video(url: str) -> str:
         print(f"    - {c['word']} ({c['sense_tag']}, agar: {c['agar_score']})")
 
     # Stage 3: Level 1 — understand the word (batch to avoid rate limits)
-    print("\n[3/4] Level 1: Generating definitions & context...")
+    print("\n[3/6] Level 1: Generating definitions & context...")
     import time
     BATCH_SIZE = 3
     all_l1_points = []
@@ -58,7 +64,7 @@ def process_video(url: str) -> str:
     print(f"  Level 1 validated: {len(l1_points)} rich point(s)")
 
     # Stage 4: Level 2 + Joke Agent (sequential due to rate limits)
-    print("\n[4/5] Level 2: Deep cultural analysis...")
+    print("\n[4/6] Level 2: Deep cultural analysis...")
     all_l2_points = []
     for i in range(0, len(l1_points), BATCH_SIZE):
         batch = l1_points[i:i + BATCH_SIZE]
@@ -70,14 +76,19 @@ def process_video(url: str) -> str:
         all_l2_points.extend([p.model_dump() for p in l2_result.rich_points])
     l2_points = all_l2_points
 
-    print("\n[5/5] Joke Agent: Explaining jokes...")
+    print("\n[5/6] Joke Agent: Explaining jokes...")
     joke_result = run_joke_agent(data["sentences"], l1_points)
     jokes = [j.model_dump() for j in joke_result.jokes]
     print(f"  Found {len(jokes)} joke(s)")
 
+    # Stage 6: Exercise Builder — graduated MCQs for jokes tagged with dark humor mechanisms
+    print("\n[6/6] Exercise Builder: Generating dark humor practice exercises...")
+    exercise_set = run_exercise_builder(joke_result)
+    exercises = [e.model_dump() for e in exercise_set.exercises]
+
     # Merge and generate output
     merged = merge_levels(l1_points, l2_points)
-    markdown = generate_markdown(url, data["word_count"], merged, jokes)
+    markdown = generate_markdown(url, data["word_count"], merged, jokes, exercises)
 
     return markdown
 

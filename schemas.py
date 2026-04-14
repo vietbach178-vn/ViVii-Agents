@@ -72,6 +72,10 @@ class JokeBlock(_NoneCoerce):
     joke_type: str = ""
     explanation: str = ""
     cultural_context: str = ""
+    # Dark humor mechanism tagging (see agents/joke/mechanism_rubric.py).
+    # Empty list = not a dark humor joke; downstream Exercise Builder skips it.
+    mechanisms: List[str] = []
+    taboo_intensity: str = ""  # "" | "mild" | "medium" | "extreme"
 
     @field_validator("transcript_excerpt", mode="before")
     @classmethod
@@ -80,6 +84,42 @@ class JokeBlock(_NoneCoerce):
             return " ".join(str(x) for x in v)
         return v
 
+    @field_validator("mechanisms", mode="before")
+    @classmethod
+    def coerce_mechanisms(cls, v):
+        if v is None:
+            return []
+        if isinstance(v, str):
+            return [v] if v else []
+        return v
+
 
 class JokeOutput(BaseModel):
     jokes: List[JokeBlock] = []
+
+
+# --- Exercise Builder output ---
+
+class ExerciseOptions(_NoneCoerce):
+    A: str = ""
+    B: str = ""
+    C: str = ""
+
+
+class ExerciseExplanation(_NoneCoerce):
+    why_c_lands: str = ""
+    why_b_misses: str = ""
+    pattern_takeaway: str = ""
+
+
+class Exercise(_NoneCoerce):
+    source_joke_timestamp: float = 0.0
+    mechanism: str = ""
+    question: str = ""
+    options: ExerciseOptions = ExerciseOptions()
+    correct: str = "C"  # "A" | "B" | "C" after shuffle
+    explanation: ExerciseExplanation = ExerciseExplanation()
+
+
+class ExerciseSet(BaseModel):
+    exercises: List[Exercise] = []
