@@ -1,0 +1,173 @@
+{
+  "video_id": "5NIA62WXTQk",
+  "url": "https://www.youtube.com/watch?v=5NIA62WXTQk",
+  "title": "Kevin Hart's Kids Caught Him Having Sex | Netflix Is A Joke",
+  "explanations": [
+    {
+      "id": "tb1",
+      "structure": {
+        "premise": "Kevin Hart is about to confess his 'first irresponsible move of the year' — which turns out to be the maximally traumatic scenario of both his kids walking in on him and his wife having sex.",
+        "setup_summary": "Hart frames the upcoming story as an 'irresponsible move', loading the audience with the mild expectation of something like a bad purchase or a minor parenting mistake. The word 'irresponsible' is the key frame-loader.",
+        "main_punchline_idx": [2, 2],
+        "tags_idx": [[5, 7], [8, 12]]
+      },
+      "mechanisms": [
+        {
+          "name": "misdirection",
+          "confidence": "high",
+          "evidence": "'first irresponsible move this year' cues a minor-mishap script; the reveal 'My kids caught me and my wife fucking' replaces it with a parental-nightmare script."
+        },
+        {
+          "name": "hyperbole",
+          "confidence": "medium",
+          "evidence": "'If it was one, it wouldn't have been that bad, but it was both' — Hart pretends there is a calculable 'acceptable number' of kids who can catch you mid-act, which is absurd because any number is mortifying."
+        },
+        {
+          "name": "act_out",
+          "confidence": "high",
+          "evidence": "Hart performs the son's urgent whisper-shout 'Come 'ere! Hurry up, come 'ere, come 'ere' — physical delivery turns a flat narration into the block's biggest laugh."
+        },
+        {
+          "name": "self_deprecation",
+          "confidence": "medium",
+          "evidence": "Hart is the dad in the humiliating scene; the whole block is him volunteering his own worst-case moment as material."
+        }
+      ],
+      "theory_scores": {
+        "incongruity_resolution": 2,
+        "benign_violation": 2,
+        "superiority": 1,
+        "relief": 1
+      },
+      "why_funny": "The opening is a classic **incongruity-resolution** move (§2.1): the word 'irresponsible' loads a low-stakes script — a bad purchase, a missed meeting — and the punchline replaces it with the single most traumatic parental scenario possible. Because Hart frames the confession himself, the joke is also a **benign violation** (§2.2): the topic is taboo enough that audiences would not normally speak about it, but the stand-up context and Hart's self-targeting make it safe. The son's act-out ('Come 'ere!') and the mock-rational escalation 'If it was one, it wouldn't have been that bad, but it was both' then function as tags, exploiting the same premise with a different mechanism each time. Hart himself is the target, which keeps the audience's 'sudden glory' feeling mild and comfortable rather than mean.",
+      "text_dependency_notes": "The son's 'Come 'ere, come 'ere' act-out depends heavily on Hart's physical performance and vocal rhythm; in a text-only transcript it reads as repetition rather than a vivid performance, losing roughly half the impact per §3.5 / §4.4 of the report."
+    },
+    {
+      "id": "tb2",
+      "structure": {
+        "premise": "Hart has a strict no-locked-doors policy meant to let him barge in on his kids — but when he tries to enforce it on his daughter, her casual response ('Wait, I'm almost finished') implies something he desperately does not want to know.",
+        "setup_summary": "Hart builds the 'no locked doors' rule as serious parenting doctrine, repeating 'Don't lock your goddamn door' twice to cement it as his authoritative position. The audience is loaded with the script 'strict dad enforcing a rule'.",
+        "main_punchline_idx": [23, 23],
+        "tags_idx": [[19, 20]]
+      },
+      "mechanisms": [
+        {
+          "name": "misdirection",
+          "confidence": "high",
+          "evidence": "After a long setup where Hart is the authoritative rule-giver, the daughter's 'Wait, I'm almost finished' flips the script so that she is now in control of the situation and he is the one who does not want the door to open."
+        },
+        {
+          "name": "benign_violation",
+          "confidence": "high",
+          "evidence": "The open-ended 'almost finished' forces the audience (and Hart) to imagine what a teenage daughter might be doing behind a locked door — a parental taboo that the joke never names but definitely invokes."
+        },
+        {
+          "name": "callback",
+          "confidence": "medium",
+          "evidence": "The whole block recycles the 'don't lock doors' rule established at [13-17] and turns it back on Hart — the rule meant to let him barge in is now the rule that would force him to witness something worse."
+        },
+        {
+          "name": "self_deprecation",
+          "confidence": "medium",
+          "evidence": "Hart spends the setup positioning himself as the hardline dad and then lets the daughter defeat him with one sentence. He is the target of his own rule."
+        }
+      ],
+      "theory_scores": {
+        "incongruity_resolution": 3,
+        "benign_violation": 3,
+        "superiority": 2,
+        "relief": 2
+      },
+      "why_funny": "This is the strongest single punchline in the set and it fires on all four theories at once. **Incongruity-resolution** (§2.1): the dominant script through [13-22] is 'strict dad about to kick a door down'; the daughter's line 'Wait, I'm almost finished' replaces that script with 'daughter doing something a dad never wants to discover', and both scripts fit the same words exactly. **Benign violation** (§2.2) does the heavy lifting in why it lands so hard — the joke gestures at teenage-daughter sexuality, a deep parental taboo, without ever naming it, so the audience does the violating in their own heads. That indirectness keeps it benign: Hart never says the worst thing out loud. Finally there is a **superiority** element (§2.3) — the audience gets to enjoy watching Hart hoisted by his own rule, a self-inflicted defeat. The 'don't lock doors' rule acts as a short-range **callback** that gives the punchline its trap-door structure.",
+      "text_dependency_notes": "The punchline works on the page, but the length of the pause Hart leaves after 'almost finished' is what lets the horror settle in — a text transcript cannot capture that beat, and the on-stage laugh is built around it."
+    },
+    {
+      "id": "tb3",
+      "structure": {
+        "premise": "Hart assumes the worst about his daughter because he knows what HE was doing as a child when HIS own door was closed — and his confession spirals into increasingly absurd territory, ending with him ready to set his own penis on fire.",
+        "setup_summary": "Hart claims he thought the worst, then reveals 'she was cooking cocaine' as a deliberately absurd overstatement. He then pivots to the real reason — his own depraved childhood — and loads the script of a 'confession'.",
+        "main_punchline_idx": [34, 34],
+        "tags_idx": [[27, 29], [37, 37], [38, 41]]
+      },
+      "mechanisms": [
+        {
+          "name": "hyperbole",
+          "confidence": "high",
+          "evidence": "'In my mind, she was cooking cocaine' is a quantitative benign-violation: the specific worst-case a parent could theoretically fear, cranked up to literal drug manufacture."
+        },
+        {
+          "name": "self_deprecation",
+          "confidence": "high",
+          "evidence": "The entire block is Hart cataloging his own childhood depravity to justify his paranoia as a father — he is volunteering himself as the villain of the flashback."
+        },
+        {
+          "name": "act_out",
+          "confidence": "high",
+          "evidence": "Hart performs his mother's voice ('What'cha doin', boy?') followed by a physical wailing act-out — the block's rhythm depends on this impression."
+        },
+        {
+          "name": "misdirection",
+          "confidence": "medium",
+          "evidence": "The setup 'I thought the worst' loads a script of rational fatherly worry; the reveal is that Hart's standard for 'the worst' is calibrated by his own inappropriate childhood, not by anything his daughter actually did."
+        },
+        {
+          "name": "tag",
+          "confidence": "high",
+          "evidence": "The final escalation to 'dick in this hand and matches in this hand… set this dick on fire' is a classic tag-on-tag exploit of the same premise, pushing further each time."
+        }
+      ],
+      "theory_scores": {
+        "incongruity_resolution": 2,
+        "benign_violation": 2,
+        "superiority": 2,
+        "relief": 3
+      },
+      "why_funny": "The block is built as an energy arc, which is why **relief theory** (§2.4) is the strongest theory here — Hart keeps loading more and more absurd detail (cooking cocaine → dick in hand → dick + matches → set it on fire), each release of tension getting bigger as the images get more extreme. The core mechanism is **self-deprecation** (§4.9) used as a weapon: Hart volunteers every embarrassing thing so that the audience's fear ('is he going to say something gross about his daughter?') is redirected onto himself. There is a **benign violation** layer too (§2.2) — matches and fire near a penis is deep taboo territory — but the safety comes from the absurdity and from Hart being the only victim. The hyperbole at the start ('cooking cocaine') and the act-out of the mother mid-block keep the rhythm varied so the audience never adapts to a single mechanism.",
+      "text_dependency_notes": "The mother's voice act-out ('What'cha doin', boy?') and the wailing impressions at [37] and [41] are physical performances — on the page they appear as stage directions and lose most of their force."
+    },
+    {
+      "id": "tb4",
+      "structure": {
+        "premise": "Some sex positions can be disguised when kids walk in and some cannot — Hart runs an escalating three-item list from easy (side) to medium (missionary) to impossible (doggie style), each with a more absurd cover-up.",
+        "setup_summary": "Hart opens with a thesis sentence that there are positions you 'can play off' and positions you can't, then walks through three demonstrations. The audience is loaded with the expectation of a practical comparison.",
+        "main_punchline_idx": [69, 76],
+        "tags_idx": [[46, 49], [50, 55], [58, 61], [62, 67]]
+      },
+      "mechanisms": [
+        {
+          "name": "rule_of_3",
+          "confidence": "high",
+          "evidence": "Three positions are enumerated in escalating difficulty — side, missionary, doggie — with the final item (doggie) breaking the pattern that 'this could be faked' because it clearly cannot."
+        },
+        {
+          "name": "act_out",
+          "confidence": "high",
+          "evidence": "Each cover-up is demonstrated physically: 'sit up, act like you're watching TV', falling and collapsing as if asleep, and finally 'Hut, hut, hut!' as fake American-football play-calling."
+        },
+        {
+          "name": "hyperbole",
+          "confidence": "high",
+          "evidence": "The cover-ups escalate from 'watch TV' to 'pretend to be asleep mid-sentence' to 'pretend you are rehearsing an American football play against a couple from down the street' — each more absurd than the last."
+        },
+        {
+          "name": "tag",
+          "confidence": "high",
+          "evidence": "Each position is effectively a tag that re-exploits the premise 'how do you cover this up' with a new absurd solution."
+        },
+        {
+          "name": "misdirection",
+          "confidence": "medium",
+          "evidence": "The audience expects the football analogy to resolve with something local and trivial; instead it expands to 'we're playing against a couple from down the street this week', which turns it into a fake-ongoing-rivalry joke."
+        }
+      ],
+      "theory_scores": {
+        "incongruity_resolution": 3,
+        "benign_violation": 2,
+        "superiority": 2,
+        "relief": 2
+      },
+      "why_funny": "This is a textbook **rule-of-3** (§4.2) built on a string of **tags** (§4.6), so **incongruity-resolution** (§2.1) fires three times in a row — each position loads a new expectation ('this is the cover') and each cover gets more absurd, culminating in the football-play reveal which is so overblown it itself gets its own mini-callback ('we're playin' against a couple from down the street'). The **benign violation** is mild but consistent — the topic is parents having sex while kids walk in, which is taboo enough to generate tension but safe because Hart is clearly offering hypothetical absurdity, not confession. The audience's **superiority** response (§2.3) comes from watching a hypothetical trapped parent fumble through cover stories more embarrassing than getting caught. The long arc allows repeated **relief** — each position gets its own tension peak and release — which is why this is the set's closer.",
+      "text_dependency_notes": "The football play-call ('Hut, hut, hut!') is the peak of the bit and is almost entirely physical — the transcript shows the words but none of the snap-count rhythm, body movement, or sustained yelling that makes it explode."
+    }
+  ]
+}

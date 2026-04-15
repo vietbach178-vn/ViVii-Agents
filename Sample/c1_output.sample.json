@@ -1,0 +1,149 @@
+{
+  "video_id": "5NIA62WXTQk",
+  "url": "https://www.youtube.com/watch?v=5NIA62WXTQk",
+  "title": "Kevin Hart's Kids Caught Him Having Sex | Netflix Is A Joke",
+  "topic_blocks": [
+    {
+      "id": "tb1",
+      "title": "Both kids walked in on us having sex",
+      "premise": "Kevin Hart's 'first irresponsible move of the year' is that both his kids, not one, caught him and his wife having sex.",
+      "start_sentence_idx": 0,
+      "end_sentence_idx": 12,
+      "start_sec": 0.26,
+      "end_sec": 34.37,
+      "punchlines": [
+        {
+          "start_sentence_idx": 2,
+          "end_sentence_idx": 2,
+          "start_sec": 8.35,
+          "end_sec": 10.53,
+          "text_hint": "My kids caught me and my wife fucking."
+        },
+        {
+          "start_sentence_idx": 5,
+          "end_sentence_idx": 7,
+          "start_sec": 17.37,
+          "end_sec": 22.98,
+          "text_hint": "Both kids. If it was one, it wouldn't have been that bad, but it was both."
+        },
+        {
+          "start_sentence_idx": 8,
+          "end_sentence_idx": 12,
+          "start_sec": 22.98,
+          "end_sec": 34.37,
+          "text_hint": "My son saw us first... He was like, 'Come 'ere! Hurry up, come 'ere, come 'ere...'"
+        }
+      ]
+    },
+    {
+      "id": "tb2",
+      "title": "Don't-lock-doors rule backfires with daughter",
+      "premise": "Kevin Hart has a strict no-locked-doors rule meant to let him barge in on his kids, but his daughter violates it and her reply to his threat to kick the door down is terrifying.",
+      "start_sentence_idx": 13,
+      "end_sentence_idx": 23,
+      "start_sec": 34.37,
+      "end_sec": 63.17,
+      "punchlines": [
+        {
+          "start_sentence_idx": 19,
+          "end_sentence_idx": 20,
+          "start_sec": 50.53,
+          "end_sec": 57.51,
+          "text_hint": "You lock that door again, I promise you I'm gonna kick the door down... I go to get in my daughter room, the door locked."
+        },
+        {
+          "start_sentence_idx": 23,
+          "end_sentence_idx": 23,
+          "start_sec": 60.05,
+          "end_sec": 63.17,
+          "text_hint": "She said, 'Wait, I'm almost finished.'"
+        }
+      ]
+    },
+    {
+      "id": "tb3",
+      "title": "I thought the worst — flashback to my own childhood",
+      "premise": "Hart assumes his daughter is doing 'the worst' behind the locked door because he remembers the depraved things he himself did as a child when his bedroom door was closed.",
+      "start_sentence_idx": 24,
+      "end_sentence_idx": 41,
+      "start_sec": 63.17,
+      "end_sec": 115.09,
+      "punchlines": [
+        {
+          "start_sentence_idx": 27,
+          "end_sentence_idx": 29,
+          "start_sec": 68.62,
+          "end_sec": 74.48,
+          "text_hint": "In my mind, she was cooking cocaine. That's what I believed."
+        },
+        {
+          "start_sentence_idx": 34,
+          "end_sentence_idx": 36,
+          "start_sec": 86.50,
+          "end_sec": 93.94,
+          "text_hint": "Every time my mom bust in my room, true story people, my dick was always in my hand."
+        },
+        {
+          "start_sentence_idx": 37,
+          "end_sentence_idx": 37,
+          "start_sec": 93.94,
+          "end_sec": 102.88,
+          "text_hint": "'What'cha doin', boy?' (wailing)"
+        },
+        {
+          "start_sentence_idx": 38,
+          "end_sentence_idx": 41,
+          "start_sec": 102.88,
+          "end_sec": 115.09,
+          "text_hint": "One time she came in my room, I had my dick in this hand and I had matches in this hand... I was gonna set this dick on fire."
+        }
+      ]
+    },
+    {
+      "id": "tb4",
+      "title": "Sex positions you can (and can't) play off when kids walk in",
+      "premise": "Some sex positions can be disguised when kids walk in and some can't — Hart walks through a three-step rule-of-3 escalation from easy (side) to medium (missionary) to impossible (doggie style).",
+      "start_sentence_idx": 42,
+      "end_sentence_idx": 76,
+      "start_sec": 115.09,
+      "end_sec": 228.0,
+      "punchlines": [
+        {
+          "start_sentence_idx": 46,
+          "end_sentence_idx": 49,
+          "start_sec": 132.44,
+          "end_sec": 144.41,
+          "text_hint": "sit up, act like you're watching TV... Get the fuck out of here and don't come back in here until we done watching TV."
+        },
+        {
+          "start_sentence_idx": 50,
+          "end_sentence_idx": 55,
+          "start_sec": 144.41,
+          "end_sec": 170.41,
+          "text_hint": "you can technically keep fucking while you talking... Don't come in here. This is my favorite part of the show."
+        },
+        {
+          "start_sentence_idx": 58,
+          "end_sentence_idx": 61,
+          "start_sec": 175.41,
+          "end_sec": 187.61,
+          "text_hint": "all you gotta do is fall down and collapse on your lady... Make it look like you asleep. Kids are stupid, they'll believe it."
+        },
+        {
+          "start_sentence_idx": 62,
+          "end_sentence_idx": 67,
+          "start_sec": 187.61,
+          "end_sec": 202.50,
+          "text_hint": "Doggie style is tough... Ass naked doggie style in the middle of the bed, that's tough to play off."
+        },
+        {
+          "start_sentence_idx": 69,
+          "end_sentence_idx": 76,
+          "start_sec": 213.47,
+          "end_sec": 228.0,
+          "text_hint": "You got one move. You gotta make it look like you're playin' American football. Hut, hut, hut... We're playin' against a couple from down the street this week."
+        }
+      ]
+    }
+  ]
+}

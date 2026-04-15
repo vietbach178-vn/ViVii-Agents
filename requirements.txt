@@ -1,3 +1,5 @@
-groq
-youtube-transcript-api
-pydantic
+groq>=0.4.0
+youtube-transcript-api>=0.6.0
+pydantic>=2.0
+flask>=3.0
+rapidfuzz>=3.0

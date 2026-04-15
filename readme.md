@@ -13,27 +13,32 @@ flowchart TD
     subgraph Transcript Processing
         B["Transcript Fetcher\n<i>Python · youtube-transcript-api</i>"]
         B -->|raw segments| C["Sentence Merger\n<i>Python heuristic</i>\ntime gap · punctuation · markers"]
-        C -->|câu thô| D["Sentence Splitter\n<i>LLM · per sentence</i>\ndetect speaker changes\n+ anti-hallucination verify"]
+        C -->|câu thô| D["A1 Sentence Splitter\n<i>LLM · per sentence</i>\ndetect speaker changes\n+ anti-hallucination verify"]
         D -->|câu hoàn chỉnh| E["Chunker\n<i>Python</i>\n~4K words/chunk"]
     end
 
-    subgraph Rich Point Discovery
-        E -->|chunks| F["Scanner Agent\n<i>LLM · per chunk</i>\nAgar test 5 criteria\n+ regex verify"]
-        F -->|verified candidates| G["Level 1 Agent\n<i>LLM · per video</i>\nDefinition · Context · Quote"]
+    subgraph "B-series · Rich Point Discovery"
+        E -->|chunks| F["B1 Scanner Agent\n<i>LLM · per chunk</i>\nAgar test 5 criteria\n+ regex verify"]
+        F -->|verified candidates| G["B2 Level 1 Agent\n<i>LLM · per video</i>\nDefinition · Context · Quote"]
+        G -->|rich points + sentences| H["B3 Level 2 Agent\n<i>LLM · per video</i>\n6 fields phân tích sâu"]
     end
 
-    subgraph Deep Analysis
-        G -->|rich points + sentences| H["Level 2 Agent\n<i>LLM · per video</i>\n6 fields phân tích sâu"]
-        G -->|rich points + sentences| I["Joke Agent\n<i>LLM · per video</i>\nGiải thích tất cả jokes\n+ tag 5 dark humor mechanisms"]
+    H --> J["Rich Point Output\n<i>9 fields per rich point</i>"]
+
+    subgraph "C-series · Joke Pipeline (standalone)"
+        T["transcript.json"] --> C1["C1 Joke Detector\n<i>LLM · 1 call cho full transcript</i>\ntopic blocks + nested punchlines"]
+        C1 -->|c1_output.json| C2["C2 Joke Explainer\n<i>LLM · per topic block</i>\n2-tier: tier_1_topic + tier_2_bits"]
+        C2 --> C3["C3 Comprehension MCQ\n<i>LLM · 1 MCQ per bit</i>\n3 options (1 correct + 2 wrong)"]
+        C3 --> C4A["c3_output.json"]
     end
 
-    subgraph Practice
-        I -->|jokes + mechanisms| K["Exercise Builder Workflow\n<i>Prompt Chain + Evaluator-Optimizer</i>\ngraduated MCQ per mechanism"]
+    subgraph "D-series · Cultural Stamps"
+        C2 --> D1["D1 Stamp Detector\n<i>LLM + code canonicalize</i>\nopen-name → fuzzy match catalog"]
+        D1 --> D2["D2 Stamp Deep-Dive\n<i>LLM · long-form article</i>\nTL;DR + 4 sections, cached"]
+        D1 --> C4["C4 Transfer Practice MCQ\n<i>LLM · stamp or topic mode</i>\n3-option new-context MCQ"]
+        D2 --> D2A["d2_articles/*.json"]
+        C4 --> C4B["c4_output.json"]
     end
-
-    H --> J["Final Output\n<i>9 fields per rich point\n+ joke explanations\n+ dark humor exercises</i>"]
-    I --> J
-    K --> J
 
     style B fill:#1a1a2e,stroke:#4ade80,color:#fff
     style C fill:#1a1a2e,stroke:#666,color:#fff
@@ -42,12 +47,20 @@ flowchart TD
     style F fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style G fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style H fill:#1a1a2e,stroke:#f59e0b,color:#fff
-    style I fill:#1a1a2e,stroke:#f59e0b,color:#fff
-    style K fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style J fill:#1a1a2e,stroke:#4ade80,color:#fff
+    style T fill:#1a1a2e,stroke:#4ade80,color:#fff
+    style C1 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style C2 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style C3 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style C4 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style C4A fill:#1a1a2e,stroke:#4ade80,color:#fff
+    style C4B fill:#1a1a2e,stroke:#4ade80,color:#fff
+    style D1 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style D2 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style D2A fill:#1a1a2e,stroke:#4ade80,color:#fff
 ```
 
-> Nodes viền vàng = LLM agent. Nodes viền xanh = Python only. Nodes viền xám = Python heuristic.
+> Nodes viền vàng = LLM agent. Nodes viền xanh = Python / input-output. Nodes viền xám = Python heuristic.
 
 ---
 
@@ -92,7 +105,7 @@ Ví dụ: 45 câu thô → 367 câu hoàn chỉnh.
 
 Nhóm các câu thành chunks ~4K words cho Scanner. Không bao giờ cắt giữa câu.
 
-### Scanner Agent (`scanner.py`)
+### B1 — Scanner Agent ([agents/B1_scanner/](agents/B1_scanner/))
 
 AI agent đầu tiên. Đọc từng chunk transcript và phát hiện candidate rich points.
 
@@ -106,7 +119,7 @@ AI agent đầu tiên. Đọc từng chunk transcript và phát hiện candidate
   - **Critical rule:** CHỈ trả về từ thực sự có trong transcript text
 - **Anti-hallucination:** Sau khi LLM trả kết quả, code check bằng regex xem từ có tồn tại trong transcript không. Không có → drop ngay + log. Đây là fix cho vấn đề LLM hallucinate từ không có trong text (vd: trả "cookout" dù transcript không có từ này).
 
-### Level 1 Agent (`level1.py`)
+### B2 — Level 1 Agent ([agents/B2_level1/](agents/B2_level1/))
 
 Nhận candidates đã verified → generate 3 fields "hiểu từ".
 
@@ -121,7 +134,7 @@ Nhận candidates đã verified → generate 3 fields "hiểu từ".
 | 2 | Context meaning | Nghĩa cụ thể trong video này, tham chiếu tình huống |
 | 3 | Transcript quote + timestamp | Trích exact câu từ transcript, kèm timestamp |
 
-### Level 2 Agent (`level2.py`)
+### B3 — Level 2 Agent ([agents/B3_level2/](agents/B3_level2/))
 
 Nhận Level 1 output → thêm 6 fields phân tích văn hoá sâu.
 
@@ -139,7 +152,12 @@ Nhận Level 1 output → thêm 6 fields phân tích văn hoá sâu.
 | 8 | Related rich points | 2-4 từ liên quan (cùng subculture, cùng function) |
 | 9 | Outsider rephrase | Nói cách khác nếu chưa sẵn sàng dùng từ gốc |
 
-### Joke Agent (`agents/joke/`)
+### ~~Joke Agent~~ (archived — `.archive/agents/A5_joke/`)
+
+**Deprecated.** Old in-line joke analyzer that ran song song với Level 2. Replaced by the standalone C-series joke pipeline (C1 + C2) — see bottom of readme. Kept in `.archive/` for reference only.
+
+<details>
+<summary>Historical description</summary>
 
 Chạy song song với Level 2. Phân tích toàn bộ transcript và giải thích mọi joke/bit/reference. Cũng gắn **dark humor mechanism tags** để Exercise Builder dùng downstream.
 
@@ -160,9 +178,16 @@ Chạy song song với Level 2. Phân tích toàn bộ transcript và giải th�
 
 - **Batching:** Transcript dài được chia thành batch ~3K words, mỗi batch 1 LLM call
 - **Dùng cho:** Video standup comedy — phần lớn nội dung đang nói kháy hoặc refer tới cultural context
-- **Mechanism rubric:** `agents/joke/mechanism_rubric.py` — single source of truth, Exercise Builder import lại để giữ taxonomy đồng bộ
+- **Mechanism rubric:** `.archive/agents/A5_joke/mechanism_rubric.py` — 5 core dark humor mechanisms (source of truth cho workflow cũ).
 
-### Exercise Builder Workflow (`agents/exercise_builder/`)
+</details>
+
+### ~~Exercise Builder Workflow~~ (archived — `.archive/agents/A6_exercise_builder/`)
+
+**Deprecated.** Old graduated-MCQ workflow driven by A5 joke tags. Replaced by upcoming D-series work (cultural stamps + practice). Kept in `.archive/` for reference.
+
+<details>
+<summary>Historical description</summary>
 
 **Không phải agent — đây là một Workflow** (Prompt Chain + Evaluator-Optimizer). Control flow do code điều khiển, LLM chỉ thực thi từng node. Lý do chọn Workflow thay vì Agent: các bước cố định, dễ eval, dễ debug, chi phí dự đoán được. Xem `groovy-wiggling-tower.md` trong thư mục plans để hiểu quyết định thiết kế.
 
@@ -199,6 +224,8 @@ Sau khi shuffle vị trí, `correct` field trong output cho biết letter nào l
 
 - **Retry policy:** mỗi (joke, mechanism) pair tối đa 2 retry nếu evaluator fail. Sau đó drop.
 - **Rate limit:** sleep 2s giữa các LLM call (Groq free tier friendly)
+
+</details>
 
 ---
 
@@ -239,26 +266,41 @@ Agent-Richpoint-Discovery/
 
   agents/              ← Mỗi sub-agent = 1 thư mục, prompt lưu riêng
     __init__.py        Re-exports all agent entry points
-    splitter/
+    A1_splitter/                 ← A-series: shared preprocessing
       agent.py         LLM-based sentence splitter (anti-hallucination verify)
       prompt.py        SPLITTER_SYSTEM
-    scanner/
+    B1_scanner/                  ← B-series: Rich Point Discovery
       agent.py         Scanner agent + regex verification
       prompt.py        SCANNER_SYSTEM
-    level1/
+    B2_level1/
       agent.py         Level 1 agent (definition / context / quote)
       prompt.py        LEVEL1_SYSTEM
-    level2/
+    B3_level2/
       agent.py         Level 2 agent (6 deep-analysis fields)
       prompt.py        LEVEL2_SYSTEM
-    joke/
-      agent.py              Joke Explainer agent
-      prompt.py             JOKE_SYSTEM (embeds mechanism_rubric)
-      mechanism_rubric.py   5 core dark humor mechanisms (source of truth)
-    exercise_builder/
-      __init__.py           Re-exports run_exercise_builder
-      workflow.py           5-node workflow (Prompt Chain + Evaluator-Optimizer)
-      prompts.py            GENERATE_SYSTEM, EVALUATE_SYSTEM, EXPLAIN_SYSTEM
+    C1_joke_detector/            ← C-series: Joke pipeline (standalone)
+      agent.py              Topic blocks + punchlines
+      prompt.py             JOKE_DETECTOR_SYSTEM
+    C2_joke_explainer/
+      agent.py              Per-block 2-tier output (tier_1_topic + tier_2_bits)
+      prompt.py             JOKE_EXPLAINER_SYSTEM
+    C3_comprehension_mcq/
+      agent.py              1 MCQ per bit (3 options) + position shuffle
+      prompt.py             C3_SYSTEM
+    C4_transfer_practice/
+      agent.py              Stamp-mode or topic-mode transfer MCQ
+      prompt.py             C4_STAMP_SYSTEM + C4_TOPIC_SYSTEM
+    D1_stamp_detector/            ← D-series: Cultural Stamps
+      agent.py              LLM open-name + code canonicalize (rapidfuzz)
+      prompt.py             D1_SYSTEM
+      catalog.json          Persisted canonical stamps + aliases (grows organically)
+    D2_stamp_deep_dive/
+      agent.py              Long-form article per canonical stamp, file-cached
+      prompt.py             D2_SYSTEM
+
+  .archive/agents/     ← Deprecated agents, kept for reference
+    A5_joke/           (old joke analyzer with dark-humor mechanism tags)
+    A6_exercise_builder/  (old graduated-MCQ workflow — replaced by C-series)
 
   templates/
     index.html         Web UI template
@@ -271,13 +313,17 @@ Agent-Richpoint-Discovery/
 
 ```python
 from agents import (
-    scan_all_chunks,
-    run_level1,
-    run_level2,
-    run_joke_agent,
-    run_exercise_builder,
+    split_sentences_with_llm,   # A1
+    scan_all_chunks,            # B1
+    run_level1,                 # B2
+    run_level2,                 # B3
+    run_joke_detector,          # C1
+    run_joke_explainer,         # C2
+    run_c3,                     # C3 — comprehension MCQ
+    run_c4,                     # C4 — transfer practice MCQ
+    run_d1,                     # D1 — stamp detector + canonicalize
+    run_d2,                     # D2 — stamp deep-dive article
 )
-from agents.splitter import split_sentences_with_llm
 ```
 
 ---
@@ -317,6 +363,7 @@ Giao diện two-column:
 | `youtube-transcript-api` | Fetch YouTube captions (no API key) |
 | `pydantic` | Structured output validation |
 | `flask` | Web UI server |
+| `rapidfuzz` | D1 stamp canonicalization (fuzzy alias matching) |
 
 ---
 
@@ -334,4 +381,110 @@ Sửa `config.py` để đổi model. Sửa `agents/<name>/agent.py` để đổ
 
 ## Sửa prompt của một agent
 
-Mỗi agent có file prompt riêng — muốn chỉnh prompt của Scanner chỉ cần mở `agents/scanner/prompt.py`, không ảnh hưởng các agent khác.
+Mỗi agent có file prompt riêng — muốn chỉnh prompt của Scanner chỉ cần mở `agents/B1_scanner/prompt.py`, không ảnh hưởng các agent khác.
+
+---
+
+## C/D Joke & Stamp Pipeline — standalone
+
+Pipeline **độc lập** với flow rich-point. Dùng để phân tích stand-up comedy + sinh practice content về joke và culture stamps cho người học. Grounded vào taxonomy ở [`../05. Content-builder-agent/05.joke-structure.md`](../05.%20Content-builder-agent/05.joke-structure.md).
+
+```
+transcript.json
+      │
+      ▼
+C1 joke_detector ──▶ c1_output.json (topic blocks + punchlines)
+      │
+      ▼
+C2 joke_explainer ──▶ c2_output.json (2-tier: tier_1_topic + tier_2_bits)
+      ├──────────────▶ C3 comprehension_mcq  ──▶ c3_output.json (1 MCQ per bit)
+      │
+      └──────────────▶ D1 stamp_detector      ──▶ d1_output.json (canonicalized stamps)
+                              ├──────────────▶ D2 stamp_deep_dive ──▶ d2_output.json + d2_articles/*.json
+                              └──────────────▶ C4 transfer_practice ──▶ c4_output.json
+```
+
+### C1 — Joke Detector ([agents/C1_joke_detector/](agents/C1_joke_detector/))
+
+- Input: 1 transcript JSON (sentences với timestamp).
+- Output: list `topic_blocks`, mỗi block chứa `title`, `premise`, sentence range, time range, và mảng `punchlines` lồng bên trong.
+- Model: `JOKE_DETECTOR_MODEL` trong `config.py` (structural segmentation — mid-size model đủ).
+- 1 LLM call cho toàn bộ transcript.
+
+### C2 — Joke Explainer ([agents/C2_joke_explainer/](agents/C2_joke_explainer/))
+
+- Input: full transcript + 1 topic block từ C1.
+- Output per block (**2-tier schema**):
+  - `tier_1_topic`: `topic_label` + `topic_summary` + `cultural_domain` — high-level "what the bit is ABOUT", không đụng joke analysis.
+  - `tier_2_bits[]`: mỗi element là một comedic beat với `bit_id`, `sentence_idx`, `text_excerpt`, `why_funny`, `primary_mechanism`, `mechanisms_all[]`.
+  - `theory_scores` (block-level) + `text_dependency_notes`.
+- Model: `JOKE_EXPLAINER_MODEL` (reasoning mạnh).
+- 1 LLM call mỗi topic block.
+- **Tier separation rules:** `tier_1_topic` NOT mention jokes/mechanisms. `tier_2_bits` NOT repeat topic_summary.
+
+### C3 — Comprehension MCQ ([agents/C3_comprehension_mcq/](agents/C3_comprehension_mcq/))
+
+- Input: C2.tier_2_bits (per block).
+- Output: 1 MCQ per bit, mỗi MCQ có `question` + `options` (3 keys A/B/C) + `correct` + `explanation` (why_correct + 2 why_wrong).
+- Rule: correct answer phải reference `primary_mechanism` của bit. Code shuffle vị trí correct letter sau khi LLM trả về để tránh bias.
+- Model: `JOKE_EXPLAINER_MODEL`.
+
+### D1 — Culture Stamp Detector ([agents/D1_stamp_detector/](agents/D1_stamp_detector/))
+
+- Input: C2 output (both tiers) per topic block.
+- Two-step:
+  1. **LLM propose** — đọc C2.tier_1_topic + tier_2_bits, sinh stamps với tên tự do (open taxonomy).
+  2. **Code canonicalize** — normalize name → exact match alias → rapidfuzz fuzzy match (≥85 score) → auto-add new entry. Catalog persist tại [`agents/D1_stamp_detector/catalog.json`](agents/D1_stamp_detector/catalog.json).
+- Output: stamps per block với `canonical_name`, `llm_proposed_name`, `category`, `confidence`, `evidence`, `source_tier`.
+- Model: `JOKE_DETECTOR_MODEL` (detection đủ cheap model).
+- **Empty OK:** joke không có stamp → `stamps: []`. D2 skip block đó, C4 fallback sang topic mode.
+
+### D2 — Stamp Deep-Dive ([agents/D2_stamp_deep_dive/](agents/D2_stamp_deep_dive/))
+
+- Input: 1 canonical stamp name + category từ D1.
+- Output: long-form article 1000-2000 words với schema `{ stamp_canonical_name, tl_dr, sections: {historical_context, cultural_significance, common_misunderstandings, related_references}, word_count }`.
+- **TL;DR mandatory** ≤100 words ở đầu article (scannable cho student).
+- **Caching:** file-based cache tại `<output_dir>/d2_articles/<slug>.json`. Cùng canonical stamp → cache hit, không gọi LLM lại. Grown across pipeline runs.
+- Model: `JOKE_EXPLAINER_MODEL`.
+
+### C4 — Transfer Practice MCQ ([agents/C4_transfer_practice/](agents/C4_transfer_practice/))
+
+- Input: D1 stamps + C2 tier_1_topic per block.
+- Two modes:
+  - **Stamp mode** (khi block có ≥1 stamp): mỗi stamp → 1 MCQ test "nhận biết stamp này ở context mới" (fresh fictional quote, không dùng lại joke gốc). Distractors reference stamps KHÁC.
+  - **Topic fallback mode** (khi D1 rỗng): fallback sang `tier_1_topic.topic_label`, sinh 1 MCQ test "nhận biết joke cùng topic ở context khác".
+- Output: 3-option MCQs với position shuffle.
+- Model: `JOKE_EXPLAINER_MODEL`.
+
+### Chạy pipeline
+
+```bash
+python joke_pipeline.py Sample/Transcript-sample.json Sample/
+# → Sample/c1_output.json
+# → Sample/c2_output.json   (2-tier)
+# → Sample/c3_output.json
+# → Sample/d1_output.json
+# → Sample/d2_output.json + Sample/d2_articles/*.json
+# → Sample/c4_output.json
+```
+
+Pipeline order: C1 → C2 → C3 → D1 → D2 → C4. C3 chỉ cần C2; D2 và C4 chỉ cần D1 (và C2 cho C4 grounding).
+
+### Test không dùng Python (paste prompt vào Claude Code)
+
+Mỗi agent có 1 file `prompt.md` self-contained:
+
+- [agents/C1_joke_detector/prompt.md](agents/C1_joke_detector/prompt.md)
+- [agents/C2_joke_explainer/prompt.md](agents/C2_joke_explainer/prompt.md)
+- [agents/C3_comprehension_mcq/prompt.md](agents/C3_comprehension_mcq/prompt.md)
+- [agents/C4_transfer_practice/prompt.md](agents/C4_transfer_practice/prompt.md)
+- [agents/D1_stamp_detector/prompt.md](agents/D1_stamp_detector/prompt.md)
+- [agents/D2_stamp_deep_dive/prompt.md](agents/D2_stamp_deep_dive/prompt.md)
+
+### Liên kết với báo cáo lý thuyết
+
+C2 explicitly tham chiếu `05.joke-structure.md`:
+- 4 lý thuyết trong `theory_scores` = §2 của report.
+- 10 mechanism labels = §4 của report.
+- `text_dependency_notes` bám theo §3.5 / §4 bảng text-analyzability.
+
