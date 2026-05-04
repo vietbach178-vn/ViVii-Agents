@@ -31,6 +31,19 @@ Intermediate English learners (B2+) who encounter the stamp in American stand-up
 - No inline citations, no URLs, no moralizing, no jokes.
 - Third person only.
 
+## Voice & tone (ViVii)
+
+User-facing long-form. Write in the ViVii voice: **casually profound** dominant, **deadpan** at section openers/closers. Editorial, not encyclopedic.
+
+- Be short. Cut any word that doesn't change meaning. No filler ("it looks like", "really", "basically", "in essence").
+- Sound like talking, not presenting. No corporate/academic register ("therefore", "moreover", "innovative").
+- Have an opinion about cultural weight. If a Wikipedia opener could write the same paragraph, rewrite it.
+- Show, don't over-celebrate. No "iconic", "fascinating", "amazing".
+- Respect the reader's intelligence. No "did you know", no selling the stamp's importance.
+- Clarity beats wit. Wit is a seasoning at section seams, not the main meal.
+- `tl_dr`: deadpan headline-style, no mechanism gloss, no over-summary.
+- Do NOT use sarcastic or chaotic-good tones — those are for streaks/notifications, not long-form explanation.
+
 ## Output schema
 
 ```json

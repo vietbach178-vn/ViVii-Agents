@@ -32,6 +32,13 @@ flowchart TD
         C3 --> C4A["c3_output.json"]
     end
 
+    subgraph "C2 Eval Loop (--eval mode)"
+        C2 -->|c2 output| C22["C2.2 Evaluator\n<i>Code + LLM</i>\n6 criteria · weighted score 0-10"]
+        C22 -->|"≥ threshold"| PASS["✓ Pass"]
+        C22 -->|"< threshold"| C23["C2.3 Improver\n<i>LLM</i>\ngenerate correction addendum"]
+        C23 -->|"addendum → re-run"| C2
+    end
+
     subgraph "D-series · Cultural Stamps"
         C2 --> D1["D1 Stamp Detector\n<i>LLM + code canonicalize</i>\nopen-name → fuzzy match catalog"]
         D1 --> D2["D2 Stamp Deep-Dive\n<i>LLM · long-form article</i>\nTL;DR + 4 sections, cached"]
@@ -51,6 +58,9 @@ flowchart TD
     style T fill:#1a1a2e,stroke:#4ade80,color:#fff
     style C1 fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style C2 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    style C22 fill:#1a1a2e,stroke:#38bdf8,color:#fff
+    style C23 fill:#1a1a2e,stroke:#38bdf8,color:#fff
+    style PASS fill:#1a1a2e,stroke:#4ade80,color:#fff
     style C3 fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style C4 fill:#1a1a2e,stroke:#f59e0b,color:#fff
     style C4A fill:#1a1a2e,stroke:#4ade80,color:#fff
@@ -60,11 +70,13 @@ flowchart TD
     style D2A fill:#1a1a2e,stroke:#4ade80,color:#fff
 ```
 
-> Nodes viền vàng = LLM agent. Nodes viền xanh = Python / input-output. Nodes viền xám = Python heuristic.
+> Nodes viền vàng = LLM agent. Nodes viền xanh lá = Python / input-output. Nodes viền xám = Python heuristic. Nodes viền xanh dương = C2 eval loop (C2.2 + C2.3, chỉ khi `--eval`).
 
 ---
 
 ## Agents chi tiết
+
+> **Voice & tone — ViVii brand.** Tất cả agent có **prose user-facing** (B2, B3, C2, D2) đều áp tone ViVii: **casually profound** dominant + **deadpan** light, không sarcastic/chaotic, English-only, clarity > wit. Nguồn: [`vivii-brand-identity-keywords (1).md`](vivii-brand-identity-keywords%20%281%29.md), [`vivii-ux-writing-guidelines (1).md`](vivii-ux-writing-guidelines%20%281%29.md). Các agent structural (A1, B1, C1, D1) và internal-only (C2.2, C2.3) không áp tone vì output là JSON identifiers / eval reasoning, không hiển thị cho user.
 
 ### Transcript Fetcher (`transcript.py`)
 
@@ -282,8 +294,15 @@ Agent-Richpoint-Discovery/
       agent.py              Topic blocks + punchlines
       prompt.py             JOKE_DETECTOR_SYSTEM
     C2_joke_explainer/
-      agent.py              Per-block 2-tier output (tier_1_topic + tier_2_bits)
+      agent.py              Per-block 2-tier output (tier_1_topic incl. tl_dr + tier_2_bits)
       prompt.py             JOKE_EXPLAINER_SYSTEM
+    C2_2_evaluator/                  ← C2.2: quality evaluator
+      agent.py              Code checks + LLM eval, weighted scoring
+      prompt.py             EVALUATOR_SYSTEM
+    C2_3_improver/                   ← C2.3: improvement advisor
+      agent.py              Generates correction addendum for C2
+      prompt.py             IMPROVER_SYSTEM
+    C2_eval_loop.py                  ← Orchestrator: C2 → C2.2 → C2.3 loop
     C3_comprehension_mcq/
       agent.py              1 MCQ per bit (3 options) + position shuffle
       prompt.py             C3_SYSTEM
@@ -372,6 +391,7 @@ Giao diện two-column:
 - **100K tokens/ngày/model** — khi hết quota 1 model, đổi sang model khác trong `config.py`
 - **12K tokens/phút** — tool tự batch 3 candidates/lần và delay 10s giữa các batch
 - Với Groq paid tier hoặc Claude API, có thể bỏ delay và chạy parallel
+- **C1 dùng model riêng (`openai/gpt-oss-120b`)**, có quota tách biệt khỏi llama-3.3-70b → các agent khác không ăn quota của C1 và ngược lại. Hữu ích khi chạy nhiều video mà không muốn đụng rate limit.
 
 ---
 
@@ -397,6 +417,16 @@ C1 joke_detector ──▶ c1_output.json (topic blocks + punchlines)
       │
       ▼
 C2 joke_explainer ──▶ c2_output.json (2-tier: tier_1_topic + tier_2_bits)
+      │                    │
+      │              [--eval mode]
+      │                    ▼
+      │              C2.2 evaluator ──▶ score (pass/fail vs threshold)
+      │                    │
+      │                    ├─ pass ──▶ tiếp tục
+      │                    └─ fail ──▶ C2.3 improver ──▶ addendum
+      │                                    │
+      │                                    └──▶ re-run C2 (loop max 3 lần)
+      │
       ├──────────────▶ C3 comprehension_mcq  ──▶ c3_output.json (1 MCQ per bit)
       │
       └──────────────▶ D1 stamp_detector      ──▶ d1_output.json (canonicalized stamps)
@@ -408,19 +438,56 @@ C2 joke_explainer ──▶ c2_output.json (2-tier: tier_1_topic + tier_2_bits)
 
 - Input: 1 transcript JSON (sentences với timestamp).
 - Output: list `topic_blocks`, mỗi block chứa `title`, `premise`, sentence range, time range, và mảng `punchlines` lồng bên trong.
-- Model: `JOKE_DETECTOR_MODEL` trong `config.py` (structural segmentation — mid-size model đủ).
+- Model: `C1_MODEL` trong `config.py` — default `openai/gpt-oss-120b` (model mạnh nhất Groq cung cấp). Tách khỏi `JOKE_DETECTOR_MODEL` để C1 có thể chạy model lớn hơn D1.
 - 1 LLM call cho toàn bộ transcript.
 
 ### C2 — Joke Explainer ([agents/C2_joke_explainer/](agents/C2_joke_explainer/))
 
 - Input: full transcript + 1 topic block từ C1.
 - Output per block (**2-tier schema**):
-  - `tier_1_topic`: `topic_label` + `topic_summary` + `cultural_domain` — high-level "what the bit is ABOUT", không đụng joke analysis.
+  - `tier_1_topic`: `topic_label` + `topic_summary` + `tl_dr` + `cultural_domain` — high-level "what the bit is ABOUT", không đụng joke analysis. **`tl_dr`** (≤40 words) là deadpan one-liner subhead dùng cho card preview, không spoil punchline, không đặt tên mechanism.
   - `tier_2_bits[]`: mỗi element là một comedic beat với `bit_id`, `sentence_idx`, `text_excerpt`, `why_funny`, `primary_mechanism`, `mechanisms_all[]`.
   - `theory_scores` (block-level) + `text_dependency_notes`.
 - Model: `JOKE_EXPLAINER_MODEL` (reasoning mạnh).
 - 1 LLM call mỗi topic block.
-- **Tier separation rules:** `tier_1_topic` NOT mention jokes/mechanisms. `tier_2_bits` NOT repeat topic_summary.
+- **Tier separation rules:** `tier_1_topic` NOT mention jokes/mechanisms. `tier_2_bits` NOT repeat topic_summary. `tl_dr` không gloss "why funny" và không mirror `topic_summary` verbatim.
+
+### C2.2 — Evaluator ([agents/C2_2_evaluator/](agents/C2_2_evaluator/))
+
+- Input: C1 topic block + C2 output cho block đó + transcript sentences.
+- Output per block: **6 tiêu chí chấm điểm** (0-10 mỗi tiêu chí, weighted total 0-10).
+- **2 loại check:**
+  - **Code checks** (deterministic, 0 LLM cost): mechanism accuracy, grounding (text_excerpt + sentence_idx), theory score range.
+  - **LLM checks** (reasoning): coverage, why_funny specificity, tier separation, theory score coherence.
+- **Rubric weights:**
+
+| # | Tiêu chí | Hệ số | Loại check |
+|---|----------|-------|------------|
+| 1 | Coverage (phủ hết punchline từ C1) | 0.25 | LLM |
+| 2 | Why-funny specificity (không generic) | 0.25 | LLM |
+| 3 | Mechanism accuracy (đúng 10-label taxonomy) | 0.15 | Code |
+| 4 | Tier separation (tier_1 ≠ tier_2) | 0.15 | LLM |
+| 5 | Grounding (excerpt + idx đúng) | 0.10 | Code |
+| 6 | Theory score coherence | 0.10 | Code + LLM fallback |
+
+- **Threshold mặc định:** 7.0 (config via `C2_EVAL_THRESHOLD` env var).
+- Model: `JOKE_EXPLAINER_MODEL`.
+
+### C2.3 — Improver ([agents/C2_3_improver/](agents/C2_3_improver/))
+
+- Input: C1 topic block + C2 output (failed) + C2.2 evaluation result.
+- Output: `addendum` (correction instructions ≤300 words) + `focus_criteria` + `expected_improvement`.
+- **Chỉ address criteria scored < 8.** Không rewrite toàn bộ task.
+- Addendum được append vào user message của C2 ở lần chạy tiếp theo.
+- Model: `JOKE_EXPLAINER_MODEL`.
+
+### C2 Eval Loop ([agents/C2_eval_loop.py](agents/C2_eval_loop.py))
+
+- Orchestrator nối C2 → C2.2 → C2.3 → re-run C2.
+- **Max iterations:** 3 (config via `C2_EVAL_MAX_ITERATIONS` env var).
+- Giữ **best-scoring output** qua các iterations (nếu hết max mà chưa pass, dùng output điểm cao nhất).
+- Output thêm `eval_summary`: avg score, pass/fail per block, score history per block.
+- **Pattern:** Evaluator-Optimizer (Anthropic taxonomy pattern #5). C2 giữ nguyên, C2.2 đánh giá, C2.3 suggest sửa input.
 
 ### C3 — Comprehension MCQ ([agents/C3_comprehension_mcq/](agents/C3_comprehension_mcq/))
 
@@ -459,9 +526,14 @@ C2 joke_explainer ──▶ c2_output.json (2-tier: tier_1_topic + tier_2_bits)
 ### Chạy pipeline
 
 ```bash
+# Chạy bình thường (C2 single-pass)
 python joke_pipeline.py Sample/Transcript-sample.json Sample/
+
+# Chạy với eval loop (C2 → C2.2 → C2.3, chất lượng cao hơn, chậm hơn)
+python joke_pipeline.py Sample/Transcript-sample.json Sample/ --eval
 # → Sample/c1_output.json
 # → Sample/c2_output.json   (2-tier)
+# → Sample/c2_eval_summary.json   (chỉ khi --eval)
 # → Sample/c3_output.json
 # → Sample/d1_output.json
 # → Sample/d2_output.json + Sample/d2_articles/*.json

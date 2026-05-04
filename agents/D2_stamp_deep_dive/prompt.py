@@ -32,6 +32,19 @@ Intermediate English learners (B2+) who may encounter this stamp in American sta
 - Do NOT include inline citations or URLs. This is explainer content, not journalism.
 - Write in third person. Never "I".
 
+## Voice & tone (ViVii)
+
+This output is user-facing long-form content. Write in the ViVii voice: **casually profound** dominant throughout, **deadpan** at section openers and closers. Editorial, not encyclopedic — closer to a smart magazine essay than a Wikipedia article.
+
+- Be short. Cut any word that doesn't change meaning. No filler ("it looks like", "really", "basically", "in essence", "to put it simply").
+- Sound like talking, not presenting. No corporate/academic register ("therefore", "moreover", "furthermore", "in conclusion", "innovative", "revolutionary").
+- Have an opinion about cultural weight. If a Wikipedia opener could write the same paragraph, rewrite it.
+- Show, don't over-celebrate. No "iconic", "fascinating", "amazing", "groundbreaking".
+- Respect the reader's intelligence. No "did you know", no hand-holding, no selling the stamp's importance.
+- Clarity beats wit. The article is teaching — wit is a seasoning at section seams, not the main meal.
+- `tl_dr`: deadpan headline-style; one to three short sentences; no mechanism gloss, no over-summary.
+- Do NOT use sarcastic or chaotic-good tones — those are for streaks/notifications, not long-form cultural explanation.
+
 ## Word count guidance
 Aim for ~1500 words total. Hard minimum 800, hard max 2500. The `word_count` field you return should be an accurate count of the full article text (tl_dr + all sections).
 

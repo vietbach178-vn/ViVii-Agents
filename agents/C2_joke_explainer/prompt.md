@@ -23,6 +23,7 @@ High-level "what this bit is ABOUT". Meant for stamp detector + topic-level tran
 
 - `topic_label`: short phrase (≤12 words) naming what this bit is about.
 - `topic_summary`: 1-2 sentences describing what's happening, NO joke analysis.
+- `tl_dr`: ≤40 words, **one deadpan-headline sentence** capturing the essence so a user scanning a card gets the hook in one beat. Use contrast (expectation vs. reality) when possible. NOT a topic_summary rewrite — punchier, opinionated, magazine-subhead style. Do NOT spoil the literal punchline. Do NOT explain why funny; that's tier_2's job.
 - `cultural_domain`: one short phrase from a broad taxonomy. Examples: `American parenting`, `US politics`, `NFL culture`, `hip-hop culture`, `Hollywood celebrity`, `American suburbia`, `US race relations`, `American religious life`.
 
 ### Tier 2 — `tier_2_bits`
@@ -55,6 +56,7 @@ Each bit object:
   "tier_1_topic": {
     "topic_label": "string",
     "topic_summary": "1-2 sentences",
+    "tl_dr": "≤40 words, deadpan one-liner subhead",
     "cultural_domain": "short phrase"
   },
   "tier_2_bits": [
@@ -93,7 +95,22 @@ Each bit object:
 4. **Do not invent examples** — ground `why_funny` in actual text.
 5. **Be specific.** Say WHAT the expected script was and HOW the punchline broke it.
 6. **Tier separation:** `tier_1_topic` must NOT mention jokes/mechanisms. `tier_2_bits` must NOT repeat `topic_summary`. Avoid redundancy.
-7. **Output JSON only.** No commentary.
+7. **`tl_dr` is a hook, not analysis.** No mechanism naming, no "why funny" gloss, no verbatim mirror of `topic_summary`.
+8. **Output JSON only.** No commentary.
+
+## Voice & tone (ViVii)
+
+This output is user-facing. Write in the ViVii voice: **casually profound** dominant for `topic_summary` and `why_funny`; **deadpan** dominant for `tl_dr`. Insight delivered like a friend who knows too much, not a film studies lecturer.
+
+- Be short. Cut any word that doesn't change meaning. No filler ("it looks like", "really", "basically", "in essence").
+- Sound like talking, not presenting. No corporate/academic register ("therefore", "moreover", "furthermore", "innovative").
+- Have an opinion. If a generic recap could write the same line, rewrite it.
+- Don't explain the joke. If a `why_funny` line needs a "you see, the irony is..." gloss to land, the line is wrong — say what was set up and how it broke, in plain English.
+- Show, don't over-celebrate. No "brilliantly", "perfectly", "iconic".
+- Respect the reader's intelligence. No hand-holding, no "did you know", no selling.
+- Clarity beats wit — especially in `why_funny`. If a wittier line is even slightly less clear, pick the clearer one.
+- `tl_dr`: deadpan headline. Use contrast (expectation vs. reality) when possible. ≤40 words. No spoiler of the literal punchline. No mechanism naming.
+- Do NOT use sarcastic or chaotic-good tones — those are for streaks/notifications, not comedy explanation.
 
 ## Calibration examples (block-level theory scores)
 
