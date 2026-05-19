@@ -34,11 +34,12 @@
                     <span id="status-text">Starting...</span>
                 </div>
                 <div class="progress-steps">
-                    <div class="step" id="step-fetch"><div class="step-dot"></div><span>Fetch transcript</span></div>
-                    <div class="step" id="step-scan"><div class="step-dot"></div><span>Scan for rich points</span></div>
-                    <div class="step" id="step-l1"><div class="step-dot"></div><span>Level 1: Understand</span></div>
-                    <div class="step" id="step-l2"><div class="step-dot"></div><span>Level 2: Deep analysis</span></div>
-                    <div class="step" id="step-jokes"><div class="step-dot"></div><span>Jokes</span></div>
+                    <div class="step" id="step-fetch"><div class="step-dot"></div><span>Transcript</span></div>
+                    <div class="step" id="step-split"><div class="step-dot"></div><span>A1 Split</span></div>
+                    <div class="step" id="step-scan"><div class="step-dot"></div><span>B1 Scan</span></div>
+                    <div class="step" id="step-l1"><div class="step-dot"></div><span>B2 Level 1</span></div>
+                    <div class="step" id="step-l2"><div class="step-dot"></div><span>B3 Level 2</span></div>
+                    <div class="step" id="step-topics"><div class="step-dot"></div><span>Topics</span></div>
                 </div>
             </div>
 
@@ -48,34 +49,50 @@
 
             <div id="results-section" class="results-section hidden">
                 <div class="video-url-bar" id="video-url-bar"></div>
-                <div class="two-col">
-                    <div class="col-results">
-                        <div class="results-header">
-                            <h2>Rich Points</h2>
-                            <div class="results-meta" id="results-meta"></div>
-                        </div>
-                        <div id="results-list"></div>
 
-                        <div id="jokes-section" class="jokes-section hidden">
-                            <div class="jokes-header">
-                                <h2>Jokes</h2>
-                                <div class="jokes-meta" id="jokes-meta"></div>
-                            </div>
-                            <div id="jokes-list"></div>
-                        </div>
+                <!-- Tab navigation -->
+                <div class="tab-bar">
+                    <button class="tab active" data-tab="tab-overview" onclick="switchTab(this)">Overview</button>
+                    <button class="tab" data-tab="tab-richpoints" onclick="switchTab(this)">Rich Points</button>
+                    <button class="tab" data-tab="tab-topics" onclick="switchTab(this)">Cultural Topics</button>
+                    <button class="tab" data-tab="tab-transcript" onclick="switchTab(this)">Transcript</button>
+                </div>
+
+                <!-- Tab: Overview -->
+                <div class="tab-content active" id="tab-overview">
+                    <div class="overview-grid" id="overview-grid"></div>
+                </div>
+
+                <!-- Tab: Rich Points -->
+                <div class="tab-content" id="tab-richpoints">
+                    <div class="results-header">
+                        <h2>Rich Points</h2>
+                        <div class="results-meta" id="results-meta"></div>
                     </div>
-                    <div class="col-transcript">
-                        <div class="transcript-header">
-                            <h2>Transcript</h2>
-                            <div class="transcript-meta" id="transcript-meta"></div>
-                        </div>
-                        <div class="transcript-body" id="transcript-body"></div>
+                    <div id="results-list"></div>
+                </div>
+
+                <!-- Tab: Cultural Topics (D1 + D2) -->
+                <div class="tab-content" id="tab-topics">
+                    <div class="results-header">
+                        <h2>Cultural Topics</h2>
+                        <div class="results-meta" id="topics-meta"></div>
                     </div>
+                    <div id="topics-list"></div>
+                </div>
+
+                <!-- Tab: Transcript -->
+                <div class="tab-content" id="tab-transcript">
+                    <div class="transcript-header">
+                        <h2>Transcript</h2>
+                        <div class="transcript-meta" id="transcript-meta"></div>
+                    </div>
+                    <div class="transcript-body" id="transcript-body"></div>
                 </div>
             </div>
 
             <div id="welcome-section" class="welcome-section">
-                <p>Paste a YouTube URL above to discover cultural rich points and joke explanations.</p>
+                <p>Paste a YouTube URL above to discover cultural rich points and cultural topics.</p>
             </div>
         </main>
     </div>

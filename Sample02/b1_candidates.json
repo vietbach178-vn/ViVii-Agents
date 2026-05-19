@@ -1,0 +1,22 @@
+{"candidates": [
+  {"word": "go bag", "type": "compound", "pos": "noun", "sense_tag": "pre-packed emergency hospital bag for expectant parents", "agar_score": 3},
+  {"word": "baby grows", "type": "compound", "pos": "noun", "sense_tag": "British term for one-piece infant sleepsuit/onesie", "agar_score": 3},
+  {"word": "coat hangers", "type": "compound", "pos": "noun", "sense_tag": "dark double entendre referencing illegal abortion method via wire hanger", "agar_score": 5},
+  {"word": "stranger danger", "type": "compound", "pos": "noun", "sense_tag": "British/American child safety campaign slogan warning children about unknown adults", "agar_score": 4},
+  {"word": "The Last Chance Saloon", "type": "idiom", "pos": "noun", "sense_tag": "idiom meaning final opportunity before consequences, evoking Wild West imagery", "agar_score": 4},
+  {"word": "non-binary Elder", "type": "compound", "pos": "noun", "sense_tag": "satirical imagined future gender-neutral honorific replacing grandma/grandpa", "agar_score": 4},
+  {"word": "don't stick your dick in crazy", "type": "slang_phrase", "pos": "phrase", "sense_tag": "vulgar male dating maxim warning against relationships with unstable people", "agar_score": 4},
+  {"word": "layup", "type": "word", "pos": "noun", "sense_tag": "basketball term meaning an easy scoring opportunity, metaphor for obvious answer", "agar_score": 3},
+  {"word": "otter's pocket", "type": "idiom", "pos": "noun", "sense_tag": "British vulgar slang for female genitalia, comic euphemism", "agar_score": 5},
+  {"word": "Vinegar Strokes", "type": "compound", "pos": "noun", "sense_tag": "British slang for the final moments before male orgasm", "agar_score": 5},
+  {"word": "Fanny", "type": "word", "pos": "noun", "sense_tag": "British slang for female genitalia (not buttocks as in American English)", "agar_score": 5},
+  {"word": "get canceled", "type": "phrasal_verb", "pos": "verb", "sense_tag": "modern cancel culture concept of being publicly shamed and ostracized for offensive speech", "agar_score": 4},
+  {"word": "Lego hair", "type": "compound", "pos": "noun", "sense_tag": "comic metaphor comparing hair to molded plastic Lego minifigure hair piece", "agar_score": 3},
+  {"word": "you can't polish a turd but you can roll it in glitter", "type": "idiom", "pos": "phrase", "sense_tag": "British idiom meaning you cannot truly improve something fundamentally bad but can superficially dress it up", "agar_score": 4},
+  {"word": "the masturbatorium", "type": "word", "pos": "noun", "sense_tag": "comic faux-Latin coinage for sperm sample collection room in medical setting", "agar_score": 4},
+  {"word": "raise your partner's hand", "type": "idiom", "pos": "phrase", "sense_tag": "comic subversion of audience participation implying coercive control in relationship", "agar_score": 4},
+  {"word": "dropped her chips", "type": "idiom", "pos": "phrase", "sense_tag": "British comic punchline implying casual context; chips = British fries", "agar_score": 4},
+  {"word": "teachable moment", "type": "compound", "pos": "noun", "sense_tag": "educational jargon for an unplanned opportunity to impart a lesson", "agar_score": 3},
+  {"word": "Lion King shit", "type": "slang_phrase", "pos": "noun", "sense_tag": "reference to Disney film's father-son rite-of-passage scene as cultural metaphor", "agar_score": 4},
+  {"word": "dream boat", "type": "compound", "pos": "noun", "sense_tag": "dated English slang for an attractive person, used ironically", "agar_score": 3}
+]}
